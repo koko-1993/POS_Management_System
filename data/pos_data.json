@@ -1,0 +1,383 @@
+{
+  "products": [
+    {
+      "sku": "T100",
+      "name": "\u101e\u1030\u100c\u1031\u1038\u1019\u1004\u103a\u1038 \u1005\u102c\u1038\u101e\u102f\u1036\u1038\u1006\u102e 50 \u101e\u102c\u1038",
+      "price": 6.5,
+      "cost_price": 5.2,
+      "stock": 120,
+      "category": "\u1005\u102c\u1038\u101e\u102f\u1036\u1038\u1006\u102e",
+      "unit": "\u1017\u1030\u1038",
+      "low_stock_threshold": 2000
+    },
+    {
+      "sku": "T200",
+      "name": "\u101e\u1030\u100c\u1031\u1038\u1019\u1004\u103a\u1038 \u1005\u102c\u1038\u101e\u102f\u1036\u1038\u1006\u102e 25 \u1000\u103b\u1015\u103a\u101e\u102c\u1038",
+      "price": 3.4,
+      "cost_price": 2.7,
+      "stock": 120,
+      "category": "\u1005\u102c\u1038\u101e\u102f\u1036\u1038\u1006\u102e",
+      "unit": "\u1017\u1030\u1038",
+      "low_stock_threshold": 5000
+    },
+    {
+      "sku": "T300",
+      "name": "\u101e\u1030\u100c\u1031\u1038\u1019\u1004\u103a\u1038 \u1005\u102c\u1038\u101e\u102f\u1036\u1038\u1006\u102e 15 \u1000\u103b\u1015\u103a\u101e\u102c\u1038",
+      "price": 2.2,
+      "cost_price": 1.7,
+      "stock": 120,
+      "category": "\u1005\u102c\u1038\u101e\u102f\u1036\u1038\u1006\u102e",
+      "unit": "\u1017\u1030\u1038",
+      "low_stock_threshold": 10000
+    },
+    {
+      "sku": "T400",
+      "name": "\u101e\u1030\u100c\u1031\u1038\u1019\u1004\u103a\u1038 \u1005\u102c\u1038\u101e\u102f\u1036\u1038\u1006\u102e 3 \u1015\u102d\u103f",
+      "price": 18.0,
+      "cost_price": 14.8,
+      "stock": 60,
+      "category": "\u1005\u102c\u1038\u101e\u102f\u1036\u1038\u1006\u102e",
+      "unit": "\u1015\u102f\u1036\u1038",
+      "low_stock_threshold": 900
+    },
+    {
+      "sku": "T500",
+      "name": "\u101e\u1030\u100c\u1031\u1038\u1019\u1004\u103a\u1038 \u1005\u102c\u1038\u101e\u102f\u1036\u1038\u1006\u102e 5 \u1015\u102d\u103f",
+      "price": 28.0,
+      "cost_price": 23.0,
+      "stock": 60,
+      "category": "\u1005\u102c\u1038\u101e\u102f\u1036\u1038\u1006\u102e",
+      "unit": "\u1015\u102f\u1036\u1038",
+      "low_stock_threshold": 250
+    },
+    {
+      "sku": "T600",
+      "name": "\u101e\u1030\u100c\u1031\u1038\u1019\u1004\u103a\u1038 \u1005\u102c\u1038\u101e\u102f\u1036\u1038\u1006\u102e 10 \u1015\u102d\u103f",
+      "price": 54.0,
+      "cost_price": 45.0,
+      "stock": 40,
+      "category": "\u1005\u102c\u1038\u101e\u102f\u1036\u1038\u1006\u102e",
+      "unit": "\u1015\u102f\u1036\u1038",
+      "low_stock_threshold": 300
+    }
+  ],
+  "sales": [
+    {
+      "business_name": "Shwe Htoo Thit",
+      "invoice_id": "000001",
+      "timestamp": "2026-03-27T09:55:07",
+      "cashier": "admin",
+      "items": [
+        {
+          "sku": "F100",
+          "name": "Diesel Premium",
+          "unit_price": 1.65,
+          "quantity": 5,
+          "line_total": 8.25
+        }
+      ],
+      "subtotal": 8.25,
+      "discount_pct": 5.0,
+      "manual_discount": 0.41,
+      "promo_discount": 0.83,
+      "discount": 1.24,
+      "promotion": {
+        "code": "PROMO10",
+        "type": "percentage",
+        "value": 10.0,
+        "category": "",
+        "discount": 0.83
+      },
+      "grand_total": 7.01,
+      "total_paid": 10.0,
+      "change_due": 2.99,
+      "payments_enc": "enc:v1:FMVCBXBKqV2_n5Aehbmg7q1-bZLjb7XmR8Q2buQ-MW9uwUwry4xllZAUQSDw8v_e3k022HtvLlX7N2gvRpRtfQ=="
+    },
+    {
+      "business_name": "Shwe Htoo Thit",
+      "invoice_id": "000002",
+      "timestamp": "2026-03-27T10:09:18",
+      "cashier": "cashier",
+      "customer": null,
+      "items": [
+        {
+          "sku": "F100",
+          "name": "Diesel Premium",
+          "unit_price": 1.65,
+          "unit_cost": 1.24,
+          "quantity": 2,
+          "line_total": 3.3,
+          "line_cost": 2.48
+        }
+      ],
+      "subtotal": 3.3,
+      "discount_pct": 0.0,
+      "manual_discount": 0.0,
+      "promo_discount": 0.0,
+      "discount": 0.0,
+      "promotion": null,
+      "grand_total": 3.3,
+      "total_cost": 2.48,
+      "gross_profit": 0.82,
+      "total_paid": 10.0,
+      "change_due": 6.7,
+      "payments_enc": "enc:v1:dz3mWPSHfCgbgMOtfsdN2HQZ2n5n0CT_3a4EuBW2sqFlXZHWSxG85U50buMLjBLoPdjSvaC4S7LmHpH5aGZiJA=="
+    },
+    {
+      "business_name": "Shwe Htoo Thit",
+      "invoice_id": "000003",
+      "timestamp": "2026-03-27T17:00:17",
+      "cashier": "salestaff",
+      "items": [
+        {
+          "sku": "T100",
+          "name": "\u101e\u1030\u100c\u1031\u1038\u1019\u1004\u103a\u1038\u1006\u102e \u1041 \u1015\u102d\u103f",
+          "unit_price": 45000.0,
+          "unit_cost": 0.0,
+          "quantity": 1,
+          "line_total": 45000.0,
+          "line_cost": 0.0
+        },
+        {
+          "sku": "L100",
+          "name": "Engine Oil 1L",
+          "unit_price": 12.0,
+          "unit_cost": 9.0,
+          "quantity": 4,
+          "line_total": 48.0,
+          "line_cost": 36.0
+        }
+      ],
+      "subtotal": 45048.0,
+      "discount_pct": 10.0,
+      "manual_discount": 4504.8,
+      "promo_discount": 0.0,
+      "discount": 4504.8,
+      "promotion": null,
+      "grand_total": 40543.2,
+      "tax_invoice": {
+        "enabled": false,
+        "tax_rate": 0.0,
+        "tax_amount": 0.0,
+        "tax_tin": ""
+      },
+      "invoice_total": 40543.2,
+      "total_cost": 36.0,
+      "gross_profit": 40507.2,
+      "total_paid": 45048.0,
+      "change_due": 4504.8,
+      "previous_hash": "",
+      "integrity_hash": "dd14fc1d3d38d23b67f2ca95cd5cb8df476282456345f9097dc8b9c6bcfa56d3",
+      "customer_enc": "enc:v1:JkFNs8QN_6W0U-abQ4gXcFOycZdEB84--Tf-YR5Mje_a3F6EbHaKMHACkMd06Q4sAtAU3FhdmDbOH6lwFQ327dn9XKELDqUkfBq2m1qfBmUu2xPKPH2FEaVnuW8ETt_i29EB0Gds7iBdKNzVCZA8UQHPOvAHFMEW9WmtMRE03tjuiBKeG3-hIwcUpZN78AlQKb8jxh1EtTr5EPAKFQrivMPORt59bqkoUiKKgQKKXHEf62vTWR2lGq0Ly3NCVcDlgIgQmzMr-hpnLd7ke505eFzkJMwPfttirAWtO14K-cLj0CmKCD70JH5mvJVrwU59Ht4AwlUazny4eO0mTAXM5tHgCp1_duxnEWfGgVTFB3Ud_Cj6GEiFPuwpuXkEWJ-_gJNE0D4-qSRHLoL8Wd5cLlGqY5VaEcFgq3epdHBdnLCBiV7BbG7gZRE-lsdZ3htwLuklh1IHzmKoaK1uFF-CuIPrVcVnfPx_AnzE3prOdgIzEIDGiFDw040tLOE=",
+      "payments_enc": "enc:v1:B1ebYQ4i7V5q2zNZBFLTudEot9ma-DVdKYRBBD-lvCkQv9MchHygSAIz7mRvHcn6hCGCFRy6v1vKr1lE4RriFAtBKg=="
+    }
+  ],
+  "users": [
+    {
+      "username": "admin",
+      "role": "admin",
+      "password_hash": "pbkdf2_sha256$120000$5n_FLm8-Ezr47BhsDlRcig==$zVxQe_WxryWJGoFDBRfulPB5Wys-pmTzTJYaZChKTDA=",
+      "must_change_password": true,
+      "require_2fa": true,
+      "otp_secret": "SKOPWHA42252BP55",
+      "allowed_devices": [
+        "POS-TERMINAL-01"
+      ]
+    },
+    {
+      "username": "cashier",
+      "role": "cashier",
+      "password_hash": "pbkdf2_sha256$120000$WZwEKb9ydkfmMVOdEE6yxA==$hxT5ZKF2ENQp2QwEX87ggpSKQbKYxr91P9qNFsZMKsI=",
+      "must_change_password": true,
+      "require_2fa": false,
+      "allowed_devices": [
+        "POS-TERMINAL-01"
+      ]
+    },
+    {
+      "username": "storekeeper",
+      "role": "storekeeper",
+      "require_2fa": false,
+      "allowed_devices": [
+        "POS-TERMINAL-01"
+      ],
+      "password_hash": "pbkdf2_sha256$120000$MIldLbJJfHyj5OcRDN1uDQ==$CwLhesCs_Et5WFEaUtBq_oqlDKPB3yPxM3guIAy_Xoo=",
+      "must_change_password": true
+    },
+    {
+      "username": "salestaff",
+      "role": "sales_staff",
+      "require_2fa": false,
+      "allowed_devices": [
+        "POS-TERMINAL-01",
+        "MOBILE-AJ3JZ5"
+      ],
+      "password_hash": "pbkdf2_sha256$120000$8AjBuGvmhiRIWZvMiS0WmA==$nVNVXBxEtn8iB3wrncayK0_eqKqCT37u2SkPeLnkHf8=",
+      "must_change_password": true
+    }
+  ],
+  "promotions": [
+    {
+      "code": "PROMO10",
+      "type": "percentage",
+      "value": 10,
+      "active": true,
+      "min_subtotal": 0,
+      "category": "",
+      "description": "10% off total"
+    },
+    {
+      "code": "ADDI15",
+      "type": "percentage",
+      "value": 15,
+      "active": true,
+      "min_subtotal": 0,
+      "category": "Additives",
+      "description": "15% off additives"
+    }
+  ],
+  "customers": [
+    {
+      "id": 1,
+      "name": "enc:v1:OBmBKAMLAtNyNYDB0KiB3agsj3jQmN_P3H0R6jmFE7f-",
+      "phone": "enc:v1:DWfDiw2PGuTjlg0Z1TiJ7uncFiWNdlbxULNTw6lGEvJgmO1tXBY=",
+      "email": "enc:v1:UVYiPuso4AYwv9pQDs0BwnYr3nkS_U-ckP6i-EKi0Kv9z8IRgT0A4xLUOb4UAS50Yg==",
+      "vehicle_no": "",
+      "loyalty_points": 0,
+      "created_at": "2026-03-27T10:09:18",
+      "updated_at": "2026-03-28T12:00:49",
+      "township": "enc:v1:1hWNxIhsYL-afpIiPba32e9iPvlZpJI65eyIJ2qrXk3eUgm1qhJgnQ==",
+      "address": "",
+      "team_code": ""
+    },
+    {
+      "id": 2,
+      "name": "enc:v1:-DLBXQ5DKvh36S4JL5nWsybP3dHZKys6BueBbl2xfGgRJZPaxg==",
+      "phone": "enc:v1:_ATj2frid0fZiJf2v4umjPKXPdqU66hweC54OG2UEqpmmeqpI834",
+      "email": "enc:v1:tRyoRqeeUGqo2efGZJMpL8G5QK5-X2CUknatpqLrUiXSj0AgHR8xiaWtXoeuYw==",
+      "vehicle_no": "",
+      "loyalty_points": 4054,
+      "created_at": "2026-03-27T13:56:31",
+      "updated_at": "2026-03-28T12:00:56",
+      "township": "enc:v1:9-4VHmt66XoDNYzkaXDS3Q4fpEoJskTNycc_oTECmOZpwji2YqZkw09-MSgyQweKxEsBwWPmTQ6TXw_nmQ==",
+      "address": "",
+      "team_code": "TEAM004"
+    },
+    {
+      "id": 3,
+      "name": "enc:v1:pT8mIL2kcZu11UjWuoDqJ8iSABZ88VW0ylgn0bkqvDpn85G35pmL9ayGerWQPFSKub2ET3zv3A==",
+      "phone": "enc:v1:3ZLeiiuogBxW5WSHa3Qd6mLnx5Mor-YifFAcQN6hYH1N_MCK1vT9",
+      "email": "",
+      "vehicle_no": "",
+      "loyalty_points": 0,
+      "created_at": "2026-03-27T14:05:41",
+      "updated_at": "2026-03-28T12:01:00",
+      "township": "enc:v1:i7EC81dIqlt4hTtvuIhUdTq2JV_20HGc4fRnx_GZQjyS7Zc_W75N0kC4NUFgoRLCDA4P-pchSQ==",
+      "address": "",
+      "team_code": ""
+    },
+    {
+      "id": 4,
+      "name": "enc:v1:5Cq4m8D71kOtkMGc1cSQ5kgM273AhcIMNcLYL8gHIOkDVdCQpA==",
+      "phone": "enc:v1:qpUjdWfXbqKwXOj__Hw9OffVG3Z-7xcfapVwBCSc8a8I1_3Ad49gzA==",
+      "email": "",
+      "vehicle_no": "",
+      "township": "enc:v1:9je74WlWf32YKTAleVKwX9RijDxcXn0ZxJGzFbD9k93xbSx_NkFsLd9GHUTDgd99tQ==",
+      "address": "",
+      "team_code": "TEAM003",
+      "loyalty_points": 0,
+      "created_at": "2026-03-28T12:00:21",
+      "updated_at": "2026-03-28T12:00:21"
+    },
+    {
+      "id": 5,
+      "name": "enc:v1:InnXGyDZ8mGRVq9ZX_UEsVGoXURkvanhGgf7jLnqA6OqTIwa",
+      "phone": "enc:v1:kkn-HUz6byEefjYa7PbOc8WuFYYD9GSZ7sV7mHA9Tri1h2kGF6o=",
+      "email": "",
+      "vehicle_no": "",
+      "township": "enc:v1:bx9YYjLohHnD-PwVKmNX9afEtX1CcRgPR1Ve3IwaDVa3IjAYasVD5sZpwX4qSADOFA==",
+      "address": "",
+      "team_code": "TEAM003",
+      "loyalty_points": 0,
+      "created_at": "2026-03-28T12:00:40",
+      "updated_at": "2026-03-28T12:00:40"
+    }
+  ],
+  "shifts": [
+    {
+      "id": 1,
+      "username": "cashier",
+      "start": "2026-03-27T10:09:18",
+      "end": "",
+      "transactions": 1,
+      "revenue": 3.3,
+      "profit": 0.82
+    }
+  ],
+  "employee_daily_sales": {
+    "2026-03-27": {
+      "cashier": {
+        "transactions": 1,
+        "revenue": 3.3,
+        "profit": 0.82
+      },
+      "salestaff": {
+        "transactions": 1,
+        "revenue": 40543.2,
+        "profit": 40507.2
+      }
+    }
+  },
+  "audit_logs": [
+    {
+      "timestamp": "2026-03-27T17:00:17",
+      "username": "salestaff",
+      "action": "checkout",
+      "target": "000003",
+      "device_id": "MOBILE-AJ3JZ5",
+      "details_hash": "295f6324b7cdaddbc8b108f2ed579a5c8f3297262b222f1b450bed337ab7fbb0"
+    }
+  ],
+  "idempotency_keys": {
+    "flutter-1774607416738": "000003"
+  },
+  "sales_chain_last_hash": "dd14fc1d3d38d23b67f2ca95cd5cb8df476282456345f9097dc8b9c6bcfa56d3",
+  "teams": [
+    {
+      "id": 1,
+      "code": "TEAM001",
+      "name": "Sale Team - 3 (THM)",
+      "sales_man_name": "Hnin Oo Wai",
+      "position": "Sales Admin",
+      "phone": "092343263",
+      "township": "Ahlon Township"
+    },
+    {
+      "id": 2,
+      "code": "TEAM002",
+      "name": "Sale Team - 3 (AHT)",
+      "sales_man_name": "Ko Hlwan Wai Zaw",
+      "position": "Sales Man",
+      "phone": "09234324231",
+      "township": "South Okkalapa Township"
+    },
+    {
+      "id": 3,
+      "code": "TEAM003",
+      "name": "Sale Team - 1 (YGN)",
+      "sales_man_name": "Ko YGN",
+      "position": "Sales Man",
+      "phone": "093333333",
+      "township": "\u101b\u1014\u103a\u1000\u102f\u1014\u103a"
+    },
+    {
+      "id": 4,
+      "code": "TEAM004",
+      "name": "Sale Team - 2 (MLM)",
+      "sales_man_name": "Ko MLM",
+      "position": "Sales Man",
+      "phone": "094444444",
+      "township": "\u1019\u1031\u102c\u103a\u101c\u1019\u103c\u102d\u102f\u1004\u103a"
+    }
+  ]
+}

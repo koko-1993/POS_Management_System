@@ -1,0 +1,194 @@
+{
+  "products": [
+    {
+      "sku": "F100",
+      "name": "Diesel Premium",
+      "price": 1.65,
+      "stock": 4993,
+      "category": "Fuel types",
+      "unit": "liter",
+      "low_stock_threshold": 800,
+      "cost_price": 1.24
+    },
+    {
+      "sku": "F200",
+      "name": "RON 92",
+      "price": 1.8,
+      "stock": 4500,
+      "category": "Fuel types",
+      "unit": "liter",
+      "low_stock_threshold": 700,
+      "cost_price": 1.35
+    },
+    {
+      "sku": "A100",
+      "name": "Injector Cleaner",
+      "price": 8.5,
+      "stock": 120,
+      "category": "Additives",
+      "unit": "bottle",
+      "low_stock_threshold": 25,
+      "cost_price": 6.38
+    },
+    {
+      "sku": "L100",
+      "name": "Engine Oil 1L",
+      "price": 12.0,
+      "stock": 90,
+      "category": "Lubricants",
+      "unit": "bottle",
+      "low_stock_threshold": 20,
+      "cost_price": 9.0
+    },
+    {
+      "sku": "P100",
+      "name": "Jerry Can 10L",
+      "price": 4.0,
+      "stock": 40,
+      "category": "Packaging",
+      "unit": "item",
+      "low_stock_threshold": 10,
+      "cost_price": 3.0
+    }
+  ],
+  "sales": [
+    {
+      "business_name": "Shwe Htoo Thit",
+      "invoice_id": "000001",
+      "timestamp": "2026-03-27T09:55:07",
+      "cashier": "admin",
+      "items": [
+        {
+          "sku": "F100",
+          "name": "Diesel Premium",
+          "unit_price": 1.65,
+          "quantity": 5,
+          "line_total": 8.25
+        }
+      ],
+      "subtotal": 8.25,
+      "discount_pct": 5.0,
+      "manual_discount": 0.41,
+      "promo_discount": 0.83,
+      "discount": 1.24,
+      "promotion": {
+        "code": "PROMO10",
+        "type": "percentage",
+        "value": 10.0,
+        "category": "",
+        "discount": 0.83
+      },
+      "grand_total": 7.01,
+      "total_paid": 10.0,
+      "change_due": 2.99,
+      "payments_enc": "enc:v1:d_bcWOjLuY63sQgNOx4MSicgi8BrX_poJhAQkA8qCYtM__Uuqtbhw4X1b4xOVVN6f0yfunGKctCCVEYyB0bTMg=="
+    },
+    {
+      "business_name": "Shwe Htoo Thit",
+      "invoice_id": "000002",
+      "timestamp": "2026-03-27T10:09:18",
+      "cashier": "cashier",
+      "customer": null,
+      "items": [
+        {
+          "sku": "F100",
+          "name": "Diesel Premium",
+          "unit_price": 1.65,
+          "unit_cost": 1.24,
+          "quantity": 2,
+          "line_total": 3.3,
+          "line_cost": 2.48
+        }
+      ],
+      "subtotal": 3.3,
+      "discount_pct": 0.0,
+      "manual_discount": 0.0,
+      "promo_discount": 0.0,
+      "discount": 0.0,
+      "promotion": null,
+      "grand_total": 3.3,
+      "total_cost": 2.48,
+      "gross_profit": 0.82,
+      "total_paid": 10.0,
+      "change_due": 6.7,
+      "payments_enc": "enc:v1:J-xerK0wCjioK8tDYTtbUYrVJg7CQcisCJ_Tygz101X1BF2Rk3srOqNQPIoUcARhzDeTJ2-yvZigDcPYtJ4RcQ=="
+    }
+  ],
+  "users": [
+    {
+      "username": "admin",
+      "role": "admin",
+      "password_hash": "pbkdf2_sha256$120000$5n_FLm8-Ezr47BhsDlRcig==$zVxQe_WxryWJGoFDBRfulPB5Wys-pmTzTJYaZChKTDA=",
+      "must_change_password": true,
+      "require_2fa": true,
+      "otp_secret": "SKOPWHA42252BP55",
+      "allowed_devices": [
+        "POS-TERMINAL-01"
+      ]
+    },
+    {
+      "username": "cashier",
+      "role": "cashier",
+      "password_hash": "pbkdf2_sha256$120000$WZwEKb9ydkfmMVOdEE6yxA==$hxT5ZKF2ENQp2QwEX87ggpSKQbKYxr91P9qNFsZMKsI=",
+      "must_change_password": true,
+      "require_2fa": false,
+      "allowed_devices": [
+        "POS-TERMINAL-01"
+      ]
+    }
+  ],
+  "promotions": [
+    {
+      "code": "PROMO10",
+      "type": "percentage",
+      "value": 10,
+      "active": true,
+      "min_subtotal": 0,
+      "category": "",
+      "description": "10% off total"
+    },
+    {
+      "code": "ADDI15",
+      "type": "percentage",
+      "value": 15,
+      "active": true,
+      "min_subtotal": 0,
+      "category": "Additives",
+      "description": "15% off additives"
+    }
+  ],
+  "customers": [
+    {
+      "id": 1,
+      "name": "enc:v1:lArFmI0QBAcj6pOX0YA_sA3r0NEESIedS_ocA0OxXkaNDg==",
+      "phone": "enc:v1:0rjfMYEBMTdls4hwGcYNPxuhekwU0T-9q5_QLDXtGibKGI8lBg==",
+      "email": "enc:v1:re9qK89iy-nJFd1WDq65A6fSnJ9t5IzTR9NzLqz5mq_9bq0=",
+      "vehicle_no": "",
+      "loyalty_points": 0,
+      "created_at": "2026-03-27T10:09:18",
+      "updated_at": "2026-03-27T10:09:18"
+    }
+  ],
+  "shifts": [
+    {
+      "id": 1,
+      "username": "cashier",
+      "start": "2026-03-27T10:09:18",
+      "end": "",
+      "transactions": 1,
+      "revenue": 3.3,
+      "profit": 0.82
+    }
+  ],
+  "employee_daily_sales": {
+    "2026-03-27": {
+      "cashier": {
+        "transactions": 1,
+        "revenue": 3.3,
+        "profit": 0.82
+      }
+    }
+  },
+  "audit_logs": [],
+  "idempotency_keys": {}
+}
