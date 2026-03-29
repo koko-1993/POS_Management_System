@@ -1,0 +1,3 @@
+# This backend currently uses only Python standard library modules.
+# The file is kept so platforms like Render can run:
+#   pip install -r requirements.txt

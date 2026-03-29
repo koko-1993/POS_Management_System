@@ -39,6 +39,7 @@ python3 -m src.pos.cli
 ## Run Web UI (React + Python API)
 ```bash
 cd /home/lenovo/Desktop/POS_system_management
+pip install -r requirements.txt
 python3 -m src.pos.api_server
 ```
 Open:
@@ -59,10 +60,12 @@ python3 -m src.pos.api_server --host 0.0.0.0 --port 8000
   cd /home/lenovo/Desktop/POS_system_management
   python3 -m src.pos.google_auth admin
   ```
-- To allow a salesperson phone to log in, authorize its device ID first:
+- Sales accounts are created by admin from the `Accounts` screen and must be assigned to a sale team.
+- Device authorization for sales phones is optional. If you set allowed devices for a sales account, only those phone IDs can log in.
+- To allow a salesperson phone to log in when device restriction is enabled:
   ```bash
   cd /home/lenovo/Desktop/POS_system_management
-  python3 -m src.pos.device_manager authorize salestaff MOBILE-SALES-01
+  python3 -m src.pos.device_manager authorize <sales_username> MOBILE-SALES-01
   ```
 - Change default passwords immediately; `AuthService.change_password` enforces strong passwords.
 - Checkout supports `Idempotency-Key` header to avoid duplicate transactions on retry.
@@ -103,7 +106,7 @@ Data persists to:
 - Admin: `admin` / `admin123`
 - Cashier: `cashier` / `cashier123`
 - Storekeeper: `storekeeper` / `store123`
-- Sales Staff: `salestaff` / `sales123`
+- Sales Staff: create accounts from the Admin `Accounts` screen
 Note: Sales staff web access is disabled. Use the mobile app flow below.
 Note: Admin account requires OTP after password. OTP secret is generated per environment in `data/pos_data.db`.
 
@@ -128,16 +131,17 @@ sqlite3 data/pos_data.db "select state_key, length(payload) from app_state;"
 
 ## Mobile Sales Flow
 1. Run the API server.
-2. Authorize the salesperson phone device ID:
+2. In the admin web console, open `Accounts` and create a `sales_staff` account assigned to a sale team.
+3. If you want device restriction, authorize the phone device ID for that username. If you skip this step, the new sales account can log in from any phone:
    ```bash
    cd /home/lenovo/Desktop/POS_system_management
-   python3 -m src.pos.device_manager authorize salestaff MOBILE-SALES-01
+   python3 -m src.pos.device_manager authorize <sales_username> MOBILE-SALES-01
    ```
-3. Open the mobile app at `http://127.0.0.1:8000/mobile`
-4. Log in with:
-   - Username: `salestaff`
-   - Password: `sales123`
-   - Device ID: the same value you authorized, for example `MOBILE-SALES-01`
+4. Open the mobile app at `http://127.0.0.1:8000/mobile`
+5. Log in with:
+   - Username: the sales account created by admin
+   - Password: the password set for that account
+   - Device ID: the same value you authorized, for example `MOBILE-SALES-01`, or any phone ID when device restriction is not enabled
 
 ## Invoice exports
 Checkout automatically generates invoice files in:
