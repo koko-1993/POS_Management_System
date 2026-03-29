@@ -15,6 +15,10 @@ from typing import Any
 _SECRET = os.getenv("POS_SECRET_KEY", "shwe-htoo-thit-default-secret-change-me").encode("utf-8")
 
 
+def admin_2fa_enabled() -> bool:
+    return os.getenv("POS_ENABLE_ADMIN_2FA", "0").strip().lower() in {"1", "true", "yes", "on"}
+
+
 def _derive_key(context: bytes = b"") -> bytes:
     return hashlib.sha256(_SECRET + context).digest()
 

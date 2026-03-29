@@ -163,6 +163,14 @@ function emptySalesAccountForm(products = []) {
   };
 }
 
+function emptyAdminPasswordForm() {
+  return {
+    current_password: "",
+    new_password: "",
+    confirm_password: "",
+  };
+}
+
 function normalizeSalesAccountDraft(account) {
   return {
     username: account?.username || "",
@@ -300,38 +308,6 @@ function patchDraft(setter, patch) {
     ...current,
     ...patch,
   }));
-}
-
-function teamMonthlySalesSeries(team, receipts, customers) {
-  const monthStart = new Date();
-  monthStart.setDate(1);
-  monthStart.setHours(0, 0, 0, 0);
-  const monthEnd = new Date(monthStart.getFullYear(), monthStart.getMonth() + 1, 0);
-  const coveredTownships = new Set(coveredTownshipsForTeam(team));
-  const customerById = new Map((customers || []).map((customer) => [Number(customer.id), customer]));
-  const totalsByDay = new Map();
-
-  for (let day = 1; day <= monthEnd.getDate(); day += 1) {
-    totalsByDay.set(day, 0);
-  }
-
-  (receipts || []).forEach((receipt) => {
-    if (!receipt.timestamp) return;
-    const saleDate = new Date(receipt.timestamp);
-    if (Number.isNaN(saleDate.getTime())) return;
-    if (saleDate < monthStart || saleDate > monthEnd) return;
-    const customer = receipt.customer?.id
-      ? customerById.get(Number(receipt.customer.id))
-      : null;
-    const belongsToTeam = (customer && customer.team_code === team.code)
-      || (customer && coveredTownships.has(customer.township))
-      || (receipt.customer && receipt.customer.team_code === team.code);
-    if (!belongsToTeam) return;
-    const day = saleDate.getDate();
-    totalsByDay.set(day, Number(totalsByDay.get(day) || 0) + Number(receipt.invoice_total || receipt.grand_total || 0));
-  });
-
-  return Array.from(totalsByDay.entries()).map(([day, total]) => ({ day, total }));
 }
 
 function getDeviceId() {
@@ -522,6 +498,8 @@ function App() {
   const [editingTeam, setEditingTeam] = useState(null);
   const [accountForm, setAccountForm] = useState(emptySalesAccountForm(products));
   const [editingAccount, setEditingAccount] = useState(null);
+  const [adminPasswordForm, setAdminPasswordForm] = useState(emptyAdminPasswordForm());
+  const [passwordResetDraft, setPasswordResetDraft] = useState({ username: "", password: "", confirm_password: "" });
   const [editingProduct, setEditingProduct] = useState(null);
 
   const [newProduct, setNewProduct] = useState({
@@ -763,6 +741,27 @@ function App() {
     setAccountForm(emptySalesAccountForm(products));
   };
 
+  const resetCreateAccountForm = () => {
+    setEditingAccount(null);
+    setAccountForm(emptySalesAccountForm(products));
+  };
+
+  const resetAdminPasswordForm = () => {
+    setAdminPasswordForm(emptyAdminPasswordForm());
+  };
+
+  const openPasswordReset = (account) => {
+    setPasswordResetDraft({
+      username: account.username,
+      password: "",
+      confirm_password: "",
+    });
+  };
+
+  const closePasswordReset = () => {
+    setPasswordResetDraft({ username: "", password: "", confirm_password: "" });
+  };
+
   const validateTeamDraft = (draft) => {
     const payload = buildTeamPayload(draft);
     if (!payload.name.trim() || !payload.sales_man_name.trim() || !payload.position.trim() || !payload.phone.trim()) {
@@ -958,6 +957,7 @@ function App() {
   const doCreateAccount = async () => {
     clearFlash();
     try {
+      const creatingWithNewTeam = accountForm.use_new_team;
       if (!accountForm.username.trim() || !accountForm.password.trim()) {
         setErr("Username and password are required");
         return;
@@ -980,9 +980,9 @@ function App() {
         active: accountForm.active,
       });
       setAccounts((current) => [...current.filter((item) => item.username !== data.user.username), data.user]);
-      closeAccountEditor();
       await Promise.all([loadUsers(), loadTeams(), loadCustomers()]);
-      setMsg(accountForm.use_new_team ? "Sales account and new team created" : "Sales account created");
+      resetCreateAccountForm();
+      setMsg(creatingWithNewTeam ? "Sales account and new team created" : "Sales account created");
     } catch (e) {
       setErr(e.message);
     }
@@ -1022,6 +1022,52 @@ function App() {
     }
   };
 
+  const doChangeOwnPassword = async () => {
+    clearFlash();
+    try {
+      if (!adminPasswordForm.current_password.trim() || !adminPasswordForm.new_password.trim()) {
+        setErr("Current password and new password are required");
+        return;
+      }
+      if (adminPasswordForm.new_password !== adminPasswordForm.confirm_password) {
+        setErr("New password and confirm password do not match");
+        return;
+      }
+      await api("/api/auth/change-password", "POST", token, adminPasswordForm);
+      resetAdminPasswordForm();
+      setMsg("Admin password updated");
+    } catch (e) {
+      setErr(e.message);
+    }
+  };
+
+  const doResetSalesAccountPassword = async () => {
+    clearFlash();
+    try {
+      if (!passwordResetDraft.username) {
+        setErr("Select a sales account first");
+        return;
+      }
+      if (!passwordResetDraft.password.trim()) {
+        setErr("New password is required");
+        return;
+      }
+      if (passwordResetDraft.password !== passwordResetDraft.confirm_password) {
+        setErr("New password and confirm password do not match");
+        return;
+      }
+      const data = await api(`/api/users/${passwordResetDraft.username}`, "PATCH", token, {
+        password: passwordResetDraft.password,
+      });
+      setAccounts((current) => current.map((item) => (item.username === data.user.username ? data.user : item)));
+      closePasswordReset();
+      await loadUsers();
+      setMsg(`Password reset for ${data.user.username}`);
+    } catch (e) {
+      setErr(e.message);
+    }
+  };
+
   const renderTownshipDropdownManager = (draft, setter) => {
     const selectedTownships = uniqueTownships(draft.townships || []);
     const claimedByOtherTeam = new Map(
@@ -1037,8 +1083,15 @@ function App() {
           မြို့နယ်တွေကို dropdown ထဲက checkbox နဲ့ multi ရွေးနိုင်ပါတယ်။ ရွေးပြီးသားကို `✓`, အခြား team ကသုံးနေတဲ့မြို့နယ်ကို disabled ပြထားပါတယ်။
         </p>
         <details className="township-dropdown township-picker">
-          <summary>{selectedTownships.length ? `${selectedTownships.length} townships selected` : "Select township(s)"}</summary>
+          <summary>
+            <span className="township-summary-copy">
+              <strong>Assigned Townships</strong>
+              <small>{selectedTownships.length ? `${selectedTownships.length} selected` : "Select township(s)"}</small>
+            </span>
+            <span className="township-summary-arrow">▾</span>
+          </summary>
           <div className="township-dropdown-menu">
+            <div className="township-dropdown-header">Township Assignment</div>
             {YANGON_REGION_TOWNSHIPS.map((township) => {
               const selected = selectedTownships.includes(township);
               const claimedBy = claimedByOtherTeam.get(township);
@@ -1133,9 +1186,16 @@ function App() {
   const renderTownshipDropdownTag = (team) => {
     const townships = coveredTownshipsForTeam(team);
     return (
-      <details className="township-dropdown">
-        <summary>{townships.length ? `${townships.length} townships` : "No township"}</summary>
+      <details className="township-dropdown team-township-dropdown">
+        <summary>
+          <span className="township-summary-copy">
+            <strong>Townships</strong>
+            <small>{townships.length ? `${townships.length} assigned` : "No township assigned"}</small>
+          </span>
+          <span className="township-summary-arrow">▾</span>
+        </summary>
         <div className="township-dropdown-menu">
+          <div className="township-dropdown-header">{team.name || team.code}</div>
           {townships.length ? townships.map((township) => (
             <div key={`${team.code}-${township}`} className="township-dropdown-item">{township}</div>
           )) : <div className="township-dropdown-item">No township assigned</div>}
@@ -1144,28 +1204,20 @@ function App() {
     );
   };
 
-  const renderTeamMonthlySalesChart = (team) => {
-    const series = teamMonthlySalesSeries(team, receipts, customers);
-    const maxTotal = Math.max(...series.map((entry) => entry.total), 1);
-    const monthLabel = new Intl.DateTimeFormat("en-US", { month: "long", year: "numeric" }).format(new Date());
-    const totalRevenue = series.reduce((sum, entry) => sum + entry.total, 0);
+  const renderTownshipCardList = (team) => {
+    const townships = coveredTownshipsForTeam(team);
     return (
-      <div style={{ marginTop: 16 }}>
+      <div className="team-township-card">
         <div className="space-between">
-          <strong>{monthLabel} Team Sales</strong>
-        <span className="badge">{formatKs(totalRevenue)}</span>
+          <span className="subtitle">Assigned Townships</span>
+          <span className="badge">{townships.length}</span>
         </div>
-        <div className="team-chart">
-          {series.map((entry) => (
-            <div className="team-chart-bar-wrap" key={`${team.code}-${entry.day}`}>
-              <div
-                className="team-chart-bar"
-                style={{ height: `${Math.max(8, (entry.total / maxTotal) * 150)}px` }}
-                title={`Day ${entry.day}: ${formatKs(entry.total)}`}
-              />
-              <span>{entry.day}</span>
-            </div>
-          ))}
+        <div className="team-township-chip-list">
+          {townships.length ? townships.map((township) => (
+            <span key={`${team.code}-${township}`} className="team-township-chip">
+              {township}
+            </span>
+          )) : <span className="subtitle">No township assigned</span>}
         </div>
       </div>
     );
@@ -1369,6 +1421,7 @@ function App() {
           {canSell && <button className={`nav-btn ${section === "sales" ? "active" : ""}`} onClick={() => setSection("sales")}>{t(lang, "sales")}</button>}
           {canTeams && <button className={`nav-btn ${section === "teams" ? "active" : ""}`} onClick={() => setSection("teams")}>{t(lang, "teams")}</button>}
           {canUsers && <button className={`nav-btn ${section === "accounts" ? "active" : ""}`} onClick={() => setSection("accounts")}>Accounts</button>}
+          {canUsers && <button className={`nav-btn ${section === "settings" ? "active" : ""}`} onClick={() => setSection("settings")}>Settings</button>}
           {canCustomers && <button className={`nav-btn ${section === "customers" ? "active" : ""}`} onClick={() => setSection("customers")}>{t(lang, "customers")}</button>}
           <button className={`nav-btn ${section === "shifts" ? "active" : ""}`} onClick={() => setSection("shifts")}>{t(lang, "shifts")}</button>
           <button className={`nav-btn ${section === "reports" ? "active" : ""}`} onClick={() => setSection("reports")}>{t(lang, "reports")}</button>
@@ -1584,43 +1637,31 @@ function App() {
                 <div className="space-between">
                   <div>
                     <h3>Sales Teams</h3>
-                    <p className="subtitle">Team card ကို click လုပ်လိုက်တာနဲ့ modal box တက်လာပြီး township multi-select dropdown, item quantity target, တစ်လစာ sales chart ကိုတန်း manage လုပ်နိုင်ပါတယ်။ Team အသစ်ဖွင့်မယ်ဆို Accounts tab ထဲက New Sales Account ကိုသုံးပါ။</p>
+                    <p className="subtitle">Team card ကို click လုပ်လိုက်တာနဲ့ modal box တက်လာပြီး township dropdown နဲ့ item quantity target ကိုတန်း manage လုပ်နိုင်ပါတယ်။ Team အသစ်ဖွင့်မယ်ဆို Accounts tab ထဲက New Sales Account ကိုသုံးပါ။</p>
                   </div>
-                  <div className="row">
-                    <span className="badge">{teams.length} teams</span>
+                  <div className="teams-summary-chip">
+                    <span className="teams-summary-label">Active Teams</span>
+                    <strong>{teams.length}</strong>
                   </div>
                 </div>
                 <div className="grid" style={{ marginTop: 16 }}>
                   {teamsWithCustomers.map((team) => (
-                    <div className="card col-6 team-card clickable-row" style={{ padding: 12 }} key={`${team.id}-customers`} onClick={() => openEditTeamModal(team)}>
-                      <div className="space-between">
-                        <div>
+                    <div className="card col-6 team-card" style={{ padding: 12 }} key={`${team.id}-customers`}>
+                      <div className="space-between team-card-top">
+                        <div className="team-card-title-block">
                           <strong>{team.name}</strong>
                           <p className="subtitle" style={{ marginTop: 6 }}>#{team.id} / {team.sales_man_name || "-"} / {team.position || "-"}</p>
                         </div>
                         <span className="badge">{team.customers.length} customers</span>
                       </div>
-                      <p className="subtitle" style={{ margin: "8px 0 0" }}>Phone: {team.phone || "-"}</p>
-                      <div style={{ marginTop: 8 }}>
-                        <span className="subtitle">Townships:</span>
-                        <div style={{ marginTop: 6 }}>{renderTownshipDropdownTag(team)}</div>
-                      </div>
-                      <p className="subtitle" style={{ margin: "8px 0 0" }}>
+                      <p className="subtitle team-card-phone">Phone: {team.phone || "-"}</p>
+                      <div style={{ marginTop: 10 }}>{renderTownshipCardList(team)}</div>
+                      <p className="subtitle team-card-targets" style={{ margin: "10px 0 0" }}>
                         Item Targets: {(team.item_targets || []).filter((item) => Number(item.quantity || 0) > 0).map((item) => `${item.name || item.sku} (${item.quantity})`).join(" ၊ ") || "Not set yet"}
                       </p>
-                      {renderTeamMonthlySalesChart(team)}
-                      <div className="row" style={{ marginTop: 12 }}>
-                        <button className="secondary" onClick={(e) => { e.stopPropagation(); openEditTeamModal(team); }}>Manage</button>
-                        <button className="danger" onClick={(e) => { e.stopPropagation(); doDeleteTeam(team.id); }}>Delete</button>
-                      </div>
-                      <div className="stack" style={{ marginTop: 10 }}>
-                        {team.customers.length ? team.customers.map((customer) => (
-                          <div className="list-row" key={`${team.id}-${customer.id}`}>
-                            <span>{customer.name}</span>
-                            <span>{customer.phone}</span>
-                            <span title={customer.address || customer.township || "-"}>{shortenAddress(customer.address || customer.township || "-")}</span>
-                          </div>
-                        )) : <p className="subtitle" style={{ margin: 0 }}>No customers assigned yet.</p>}
+                      <div className="row team-card-actions" style={{ marginTop: 14 }}>
+                        <button className="secondary" onClick={() => openEditTeamModal(team)}>Manage</button>
+                        <button className="danger" onClick={() => doDeleteTeam(team.id)}>Delete</button>
                       </div>
                     </div>
                   ))}
@@ -1633,7 +1674,7 @@ function App() {
                       <div>
                         <h3 style={{ margin: 0 }}>Manage Team</h3>
                         <p className="subtitle" style={{ marginTop: 6 }}>
-                          Team info, townships, item quantity target, monthly sales curve ကိုဒီ box ထဲမှာ manage လုပ်နိုင်ပါတယ်။
+                          Team info, township dropdown, item quantity target ကိုဒီ box ထဲမှာ manage လုပ်နိုင်ပါတယ်။
                         </p>
                       </div>
                       <button className="secondary" onClick={closeTeamModal}>Close</button>
@@ -1645,7 +1686,6 @@ function App() {
                       <div className="col-6"><input value={activeTeamDraft.phone} onChange={(e) => (editingTeam ? patchDraft(setEditingTeam, { phone: e.target.value }) : patchDraft(setTeamForm, { phone: e.target.value }))} placeholder="Phone Number" /></div>
                       <div className="col-12">{editingTeam ? renderTownshipDropdownManager(editingTeam, setEditingTeam) : renderTownshipDropdownManager(teamForm, setTeamForm)}</div>
                       <div className="col-12">{editingTeam ? renderItemTargetPlanner(editingTeam, setEditingTeam) : renderItemTargetPlanner(teamForm, setTeamForm)}</div>
-                      <div className="col-12">{renderTeamMonthlySalesChart(editingTeam || { ...teamForm, code: "DRAFT" })}</div>
                       <div className="col-12 row">
                         <button onClick={editingTeam ? doUpdateTeam : doCreateTeam}>{editingTeam ? "Update Team" : "Save Team"}</button>
                         {editingTeam && <button className="danger" onClick={() => doDeleteTeam(editingTeam.id)}>Delete Team</button>}
@@ -1657,17 +1697,98 @@ function App() {
             </>
           )}
 
-          {section === "accounts" && canUsers && (
+          {(section === "accounts" || section === "settings") && canUsers && (
             <>
+              {section === "settings" && (
+              <div className="card col-12">
+                <div className="space-between">
+                  <div>
+                    <h3>Admin Profile & Settings</h3>
+                    <p className="subtitle">Admin account info နဲ့ password change setting ကိုဒီနေရာကနေ manage လုပ်နိုင်ပါတယ်။</p>
+                  </div>
+                  <span className="badge admin">Admin Settings</span>
+                </div>
+                <div className="grid" style={{ marginTop: 12 }}>
+                  <div className="card col-5 settings-panel">
+                    <h4 style={{ marginTop: 0, marginBottom: 12 }}>Profile</h4>
+                    <div className="stack">
+                      <div className="settings-line">
+                        <span className="subtitle">Username</span>
+                        <strong>{user.username}</strong>
+                      </div>
+                      <div className="settings-line">
+                        <span className="subtitle">Role</span>
+                        <span className="pill info">{user.role}</span>
+                      </div>
+                      <div className="settings-line">
+                        <span className="subtitle">Device ID</span>
+                        <span className="mono">{getDeviceId()}</span>
+                      </div>
+                      <div className="settings-line">
+                        <span className="subtitle">Language</span>
+                        <button className="secondary" type="button" onClick={toggleLang}>
+                          {lang === "en" ? "English" : "မြန်မာ"}
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="card col-7 settings-panel">
+                    <div className="space-between">
+                      <div>
+                        <h4 style={{ margin: 0 }}>Change Admin Password</h4>
+                        <p className="subtitle" style={{ marginTop: 6 }}>Strong password policy applies here too.</p>
+                      </div>
+                      {(adminPasswordForm.current_password || adminPasswordForm.new_password || adminPasswordForm.confirm_password) && (
+                        <button className="secondary" type="button" onClick={resetAdminPasswordForm}>Clear</button>
+                      )}
+                    </div>
+                    <div className="grid" style={{ marginTop: 12 }}>
+                      <div className="col-4">
+                        <input
+                          type="password"
+                          value={adminPasswordForm.current_password}
+                          onChange={(e) => setAdminPasswordForm((current) => ({ ...current, current_password: e.target.value }))}
+                          placeholder="Current Password"
+                        />
+                      </div>
+                      <div className="col-4">
+                        <input
+                          type="password"
+                          value={adminPasswordForm.new_password}
+                          onChange={(e) => setAdminPasswordForm((current) => ({ ...current, new_password: e.target.value }))}
+                          placeholder="New Password"
+                        />
+                      </div>
+                      <div className="col-4">
+                        <input
+                          type="password"
+                          value={adminPasswordForm.confirm_password}
+                          onChange={(e) => setAdminPasswordForm((current) => ({ ...current, confirm_password: e.target.value }))}
+                          placeholder="Confirm Password"
+                        />
+                      </div>
+                      <div className="col-12 row">
+                        <button type="button" onClick={doChangeOwnPassword}>Update Admin Password</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              )}
+
               <div className="card col-12">
                 <div className="space-between">
                   <div>
                     <h3>Sales Accounts</h3>
-                    <p className="subtitle">Mobile sales staff account, password, active status, and team assignment ကို admin ကဒီနေရာကနေပဲ manage လုပ်နိုင်ပါတယ်။ Team အသစ်လိုရင် ဒီ form ထဲကနေပဲတစ်ခါတည်းဖွင့်နိုင်ပါတယ်။</p>
+                    <p className="subtitle">
+                      {section === "settings"
+                        ? "Admin profile setting နဲ့ sales account password reset ကိုဒီ section ထဲမှာသီးသန့် manage လုပ်နိုင်ပါတယ်။"
+                        : "Mobile sales staff account create, active status, and team assignment ကို admin ကဒီနေရာကနေပဲ manage လုပ်နိုင်ပါတယ်။ Team အသစ်လိုရင် ဒီ form ထဲကနေပဲတစ်ခါတည်းဖွင့်နိုင်ပါတယ်။"}
+                    </p>
                   </div>
                   <div className="row">
                     <span className="badge">{accounts.length} accounts</span>
-                    <button onClick={openCreateAccount}>New Sales Account</button>
+                    {section === "accounts" && <button onClick={openCreateAccount}>New Sales Account</button>}
                   </div>
                 </div>
               </div>
@@ -1681,6 +1802,7 @@ function App() {
                       <th>Role</th>
                       <th>Team</th>
                       <th>Status</th>
+                      {section === "settings" && <th>Password</th>}
                       <th>Action</th>
                     </tr>
                   </thead>
@@ -1698,24 +1820,98 @@ function App() {
                               {account.active ? "Active" : "Inactive"}
                             </span>
                           </td>
+                          {section === "settings" && (
+                            <td>
+                              <button className="secondary" onClick={() => openPasswordReset(account)}>Reset Password</button>
+                            </td>
+                          )}
                           <td>
                             <div className="row">
-                              <button className="secondary" onClick={() => openEditAccount(account)}>Edit</button>
-                              <button className="danger" onClick={() => doDeleteAccount(account.username)}>Delete</button>
+                              {section === "accounts" && <button className="secondary" onClick={() => openEditAccount(account)}>Edit</button>}
+                              {section === "accounts" && (
+                                <button
+                                  className="secondary"
+                                  onClick={() => {
+                                    openPasswordReset(account);
+                                    setSection("settings");
+                                  }}
+                                >
+                                  Password
+                                </button>
+                              )}
+                              {section === "accounts" && <button className="danger" onClick={() => doDeleteAccount(account.username)}>Delete</button>}
+                              {section === "settings" && (
+                                <button
+                                  className="secondary"
+                                  onClick={() => {
+                                    setSection("accounts");
+                                    openEditAccount(account);
+                                  }}
+                                >
+                                  Open Account
+                                </button>
+                              )}
                             </div>
                           </td>
                         </tr>
                       ))}
                   </tbody>
                 </table>
-                {!accounts.filter((account) => account.role === "sales_staff").length && (
+                  {!accounts.filter((account) => account.role === "sales_staff").length && (
                   <p className="subtitle">No sales accounts yet.</p>
                 )}
               </div>
 
+              {section === "settings" && passwordResetDraft.username && (
+                <div className="card col-12">
+                  <div className="space-between">
+                    <div>
+                      <h3 style={{ margin: 0 }}>Reset Sales Account Password</h3>
+                      <p className="subtitle" style={{ marginTop: 6 }}>
+                        `{passwordResetDraft.username}` အတွက် password အသစ်သတ်မှတ်နိုင်ပါတယ်။
+                      </p>
+                    </div>
+                    <button className="secondary" type="button" onClick={closePasswordReset}>Close</button>
+                  </div>
+                  <div className="grid" style={{ marginTop: 12 }}>
+                    <div className="col-4">
+                      <input value={passwordResetDraft.username} readOnly placeholder="Username" />
+                    </div>
+                    <div className="col-4">
+                      <input
+                        type="password"
+                        value={passwordResetDraft.password}
+                        onChange={(e) => setPasswordResetDraft((current) => ({ ...current, password: e.target.value }))}
+                        placeholder="New Password"
+                      />
+                    </div>
+                    <div className="col-4">
+                      <input
+                        type="password"
+                        value={passwordResetDraft.confirm_password}
+                        onChange={(e) => setPasswordResetDraft((current) => ({ ...current, confirm_password: e.target.value }))}
+                        placeholder="Confirm Password"
+                      />
+                    </div>
+                    <div className="col-12 row">
+                      <button type="button" onClick={doResetSalesAccountPassword}>Save New Password</button>
+                      <button className="secondary" type="button" onClick={closePasswordReset}>Cancel</button>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {section === "accounts" && (
               <div className="card col-12">
                 <div className="space-between">
-                  <h3>{editingAccount ? "Edit Sales Account" : "Create Sales Account"}</h3>
+                  <div>
+                    <h3 style={{ margin: 0 }}>{editingAccount ? "Edit Sales Account" : "Create Sales Account + Team"}</h3>
+                    {!editingAccount && (
+                      <p className="subtitle" style={{ marginTop: 6 }}>
+                        Account info နဲ့ team setup ကို form တစ်ခုတည်းမှာတန်းဖြည့်နိုင်ပါတယ်။
+                      </p>
+                    )}
+                  </div>
                   {(editingAccount || accountForm.username || accountForm.full_name || accountForm.team_code || accountForm.use_new_team) && (
                     <button className="secondary" onClick={closeAccountEditor}>Clear</button>
                   )}
@@ -1796,14 +1992,11 @@ function App() {
                   {!editingAccount && accountForm.use_new_team && (
                     <>
                       <div className="col-12">
-                        <div className="space-between">
-                          <strong>New Team Information</strong>
-                          <span className="badge">
-                            {(accountForm.team_draft.item_targets || []).filter((item) => Number(item.quantity || 0) > 0).length} targets
-                          </span>
-                        </div>
-                        <p className="subtitle" style={{ marginTop: 8 }}>
-                          Team tab ထဲက create features ကို ဒီနေရာကိုရွှေ့ထားပါတယ်။ Account အသစ်ဖွင့်ရင်း team info, township, item target ကိုတစ်ခါတည်းသတ်မှတ်နိုင်ပါတယ်။
+                        <p className="subtitle" style={{ margin: 0 }}>
+                          Team setup
+                          {" · "}
+                          {(accountForm.team_draft.item_targets || []).filter((item) => Number(item.quantity || 0) > 0).length}
+                          {" "}targets selected
                         </p>
                       </div>
                       <div className="col-6">
@@ -1878,6 +2071,7 @@ function App() {
                   </div>
                 </div>
               </div>
+              )}
             </>
           )}
 

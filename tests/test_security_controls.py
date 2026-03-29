@@ -2,7 +2,9 @@ import tempfile
 import unittest
 import json
 import sqlite3
+import os
 from pathlib import Path
+from unittest.mock import patch
 
 from src.pos.auth import AuthService
 from src.pos.security import build_otpauth_uri, current_2fa_code
@@ -21,15 +23,20 @@ class TestSecurityControls(unittest.TestCase):
     def tearDown(self):
         self.tmpdir.cleanup()
 
-    def test_admin_requires_2fa(self):
-        with self.assertRaises(ValueError):
-            self.auth.login("admin", "admin123", device_id="POS-TERMINAL-01")
-
-        data = self.store.get_data()
-        admin_row = next(u for u in data["users"] if u["username"] == "admin")
-        otp = current_2fa_code(admin_row["otp_secret"])
-        user = self.auth.login("admin", "admin123", otp_code=otp, device_id="POS-TERMINAL-01")
+    def test_admin_login_skips_otp_while_2fa_is_disabled(self):
+        user = self.auth.login("admin", "admin123", device_id="POS-TERMINAL-01")
         self.assertEqual(user["role"], "admin")
+
+    def test_admin_requires_2fa_when_env_flag_is_enabled(self):
+        with patch.dict(os.environ, {"POS_ENABLE_ADMIN_2FA": "1"}):
+            with self.assertRaises(ValueError):
+                self.auth.login("admin", "admin123", device_id="POS-TERMINAL-01")
+
+            data = self.store.get_data()
+            admin_row = next(u for u in data["users"] if u["username"] == "admin")
+            otp = current_2fa_code(admin_row["otp_secret"])
+            user = self.auth.login("admin", "admin123", otp_code=otp, device_id="POS-TERMINAL-01")
+            self.assertEqual(user["role"], "admin")
 
     def test_device_restriction(self):
         with self.assertRaises(ValueError):
@@ -109,6 +116,10 @@ class TestSecurityControls(unittest.TestCase):
         self.assertEqual(created["username"], "sales.thm")
         self.assertEqual(created["team_code"], "TEAM001")
         self.assertTrue(created["active"])
+
+        logged_in = self.auth.login("sales.thm", "SalesPass#2026", device_id="ANY-PHONE")
+        self.assertEqual(logged_in["role"], "sales_staff")
+        self.assertEqual(logged_in["team_code"], "TEAM001")
 
         updated = self.auth.update_user(
             "sales.thm",

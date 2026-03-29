@@ -4,7 +4,6 @@ from pathlib import Path
 
 from src.pos.auth import AuthService
 from src.pos.exporter import InvoiceExporter
-from src.pos.security import current_2fa_code
 from src.pos.service import POSService
 from src.pos.store import Store
 
@@ -129,14 +128,7 @@ class TestAuthAndExport(unittest.TestCase):
         self.tmpdir.cleanup()
 
     def test_login_roles(self):
-        data = self.store.get_data()
-        admin_row = next(u for u in data["users"] if u["username"] == "admin")
-        admin = self.auth.login(
-            "admin",
-            "admin123",
-            otp_code=current_2fa_code(admin_row["otp_secret"]),
-            device_id="POS-TERMINAL-01",
-        )
+        admin = self.auth.login("admin", "admin123", device_id="POS-TERMINAL-01")
         cashier = self.auth.login("cashier", "cashier123", device_id="POS-TERMINAL-01")
         storekeeper = self.auth.login("storekeeper", "store123", device_id="POS-TERMINAL-01")
         sales_staff = self.auth.login("salestaff", "sales123", device_id="POS-TERMINAL-01")

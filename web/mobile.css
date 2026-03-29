@@ -129,6 +129,12 @@ button {
   cursor: pointer;
   color: #f8fafc;
   background: linear-gradient(135deg, var(--accent), #115e59);
+  transition:
+    transform 140ms ease,
+    box-shadow 140ms ease,
+    filter 140ms ease,
+    background 140ms ease,
+    border-color 140ms ease;
 }
 
 button.secondary {
@@ -143,6 +149,28 @@ button.warn {
 
 button.danger {
   background: linear-gradient(135deg, var(--danger), #9a3412);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  button:hover {
+    transform: translateY(-1px);
+    filter: brightness(1.03);
+    box-shadow: 0 10px 24px rgba(15, 118, 110, 0.18);
+  }
+
+  button.secondary:hover {
+    background: rgba(255, 255, 255, 1);
+    border-color: rgba(101, 72, 38, 0.28);
+    box-shadow: 0 10px 24px rgba(64, 49, 28, 0.12);
+  }
+
+  button.warn:hover {
+    box-shadow: 0 10px 24px rgba(245, 158, 11, 0.22);
+  }
+
+  button.danger:hover {
+    box-shadow: 0 10px 24px rgba(194, 65, 12, 0.22);
+  }
 }
 
 .actions {

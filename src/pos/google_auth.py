@@ -3,7 +3,7 @@ from __future__ import annotations
 import argparse
 from pathlib import Path
 
-from .security import build_otpauth_uri, current_2fa_code
+from .security import admin_2fa_enabled, build_otpauth_uri, current_2fa_code
 from .store import Store
 
 
@@ -29,6 +29,10 @@ def main() -> None:
 
     if not user.get("require_2fa"):
         raise SystemExit(f"2FA is not enabled for user: {args.username}")
+
+    if not admin_2fa_enabled():
+        print("Note: admin 2FA is currently disabled by POS_ENABLE_ADMIN_2FA.")
+        print("Set POS_ENABLE_ADMIN_2FA=1 in production before using this OTP setup.")
 
     secret = user.get("otp_secret", "")
     if not secret:

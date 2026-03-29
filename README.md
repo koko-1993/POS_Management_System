@@ -4,7 +4,7 @@ A lightweight Point-of-Sale management system you can run in terminal.
 
 ## Features
 - Role-based login (`admin`, `cashier`, `storekeeper`, `sales_staff`)
-- Strong password policy support and 2FA (admin)
+- Strong password policy support and optional admin 2FA
 - Shift tracking with daily sales by employee
 - Daily / Weekly / Monthly sales reports
 - Inventory reports
@@ -54,7 +54,9 @@ python3 -m src.pos.api_server --host 0.0.0.0 --port 8000
 
 ## Security Notes
 - API requests include `X-Device-ID`; login is blocked for unauthorized terminals.
-- Admin login requires OTP (`otp_code`) in addition to username/password.
+- Admin OTP/2FA is currently disabled by default for testing and demo deployments.
+- Production note: set `POS_ENABLE_ADMIN_2FA=1` to re-enable OTP login for admin.
+- When `POS_ENABLE_ADMIN_2FA=1`, admin login requires OTP (`otp_code`) in addition to username/password.
 - Google Authenticator setup details can be shown with:
   ```bash
   cd /home/lenovo/Desktop/POS_system_management
@@ -108,7 +110,8 @@ Data persists to:
 - Storekeeper: `storekeeper` / `store123`
 - Sales Staff: create accounts from the Admin `Accounts` screen
 Note: Sales staff web access is disabled. Use the mobile app flow below.
-Note: Admin account requires OTP after password. OTP secret is generated per environment in `data/pos_data.db`.
+Note: Admin OTP is intentionally disabled right now for testing/demo use.
+Note: For real production, set `POS_ENABLE_ADMIN_2FA=1` and then configure the admin OTP secret from `data/pos_data.db`.
 
 ## Backup and Restore
 - The app creates at most one automatic backup per day when data is saved.

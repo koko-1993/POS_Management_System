@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from .security import generate_2fa_secret, hash_password, validate_password_strength, verify_2fa, verify_password
+from .security import admin_2fa_enabled, generate_2fa_secret, hash_password, validate_password_strength, verify_2fa, verify_password
 from .store import Store
 
 
@@ -32,7 +32,7 @@ class AuthService:
         if allowed_devices and device_id not in allowed_devices:
             raise ValueError("Unauthorized POS device")
 
-        if user.get("require_2fa"):
+        if user.get("require_2fa") and admin_2fa_enabled():
             if not otp_code:
                 raise ValueError("2FA code required")
             if not verify_2fa(user.get("otp_secret", ""), otp_code):

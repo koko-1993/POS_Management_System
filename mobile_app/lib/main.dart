@@ -319,10 +319,8 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   late final TextEditingController _baseUrlController;
   late final TextEditingController _deviceIdController;
-  final TextEditingController _usernameController =
-      TextEditingController(text: "salestaff");
-  final TextEditingController _passwordController =
-      TextEditingController(text: "sales123");
+  final TextEditingController _usernameController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _otpController = TextEditingController();
 
   bool _submitting = false;
@@ -451,7 +449,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   SizedBox(height: 8),
                   Text(
-                    "Sales staff can log in from an authorized phone and create invoices while visiting shops.",
+                    "Sales staff can log in with the account created by admin and create invoices while visiting shops.",
                     style: TextStyle(color: Color(0xFFD7F8F2), height: 1.4),
                   ),
                 ],
@@ -490,7 +488,10 @@ class _LoginScreenState extends State<LoginScreen> {
                   TextField(
                     controller: _usernameController,
                     decoration:
-                        const InputDecoration(border: OutlineInputBorder()),
+                        const InputDecoration(
+                          border: OutlineInputBorder(),
+                          hintText: "Admin created sales account",
+                        ),
                   ),
                   const SizedBox(height: 12),
                   const Text("Password",
@@ -499,8 +500,10 @@ class _LoginScreenState extends State<LoginScreen> {
                   TextField(
                     controller: _passwordController,
                     obscureText: true,
-                    decoration:
-                        const InputDecoration(border: OutlineInputBorder()),
+                    decoration: const InputDecoration(
+                      border: OutlineInputBorder(),
+                      hintText: "Enter account password",
+                    ),
                   ),
                   const SizedBox(height: 12),
                   const Text("OTP if required",
@@ -525,6 +528,11 @@ class _LoginScreenState extends State<LoginScreen> {
                     Text(_error,
                         style: const TextStyle(color: Color(0xFFB42318))),
                   ],
+                  const SizedBox(height: 12),
+                  const Text(
+                    "Admin က Accounts tab ထဲမှာဖွင့်ပေးထားတဲ့ sales account နဲ့ဝင်ပါ။ Device restriction သတ်မှတ်ထားရင် authorized phone ကိုပဲ အသုံးပြုနိုင်ပါတယ်။",
+                    style: TextStyle(color: Color(0xFF6B7280)),
+                  ),
                 ],
               ),
             ),
